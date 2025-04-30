@@ -1,0 +1,1 @@
+kubectl port-forward svcvc/drupal-service 8080:80

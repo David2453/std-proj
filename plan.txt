@@ -1,0 +1,186 @@
+Plan detaliat de implementare a proiectului: Site web cu chat și IA peste Kubernetes
+Obiectiv
+Să creez un site web personalizat pentru STANCU DAVID-SORIN, care include un CMS (Drupal), un sistem de chat bazat pe WebSocket și o aplicație de IA cu integrare Azure, toate gestionate într-un cluster Kubernetes.
+
+Pasul 1: Configurarea mediului de lucru
+
+Obiectiv: Pregătește un mediu funcțional pentru dezvoltare și testare.
+Acțiuni:
+Instalează un cluster Kubernetes local (ex. Minikube) sau folosește un serviciu cloud (ex. Azure Kubernetes Service - AKS).
+Configurează un registry de containere (ex. Docker Registry) pentru a stoca imaginile aplicațiilor.
+Obține acces la Azure pentru Blob Storage, Azure SQL Database și serviciul de "entity extraction".
+Instalează instrumentele necesare: Docker, kubectl, un IDE (ex. IntelliJ, VSCode), și dependențe pentru Drupal, Java, și Angular.
+
+
+
+
+Pasul 2: Implementarea CMS-ului (Drupal)
+
+Obiectiv: Creează un site web simplu folosind Drupal, integrat în Kubernetes.
+Acțiuni:
+Găsește o imagine Docker oficială pentru Drupal (ex. drupal:latest).
+Configurează o bază de date (ex. MySQL sau PostgreSQL) pentru Drupal:
+Rulează baza de date ca un deployment separat în Kubernetes sau folosește un serviciu managed.
+Creează un utilizator și o bază de date pentru Drupal.
+
+
+Scrie un fișier YAML pentru deployment-ul Drupal:
+2 replici.
+Expune portul 80 printr-un service de tip LoadBalancer sau Ingress.
+
+
+Accesează interfața web a Drupal și creează un site simplu (ex. o pagină pentru o pizzerie cu meniu și contact).
+Testează accesibilitatea site-ului la http://<cluster-ip>:80.
+
+
+
+
+Pasul 3: Implementarea sistemului de chat
+
+Obiectiv: Creează un sistem de chat funcțional cu backend și frontend, integrat în Drupal.
+
+Acțiuni:
+Backend (Server WebSocket cu Java+Tomcat)
+
+Scrie o aplicație Java care folosește WebSocket:
+Gestionează conexiunile clienților.
+Primește mesaje, le salvează în baza de date și le trimite către toți clienții conectați.
+
+
+Configurează o bază de date (ex. MySQL) pentru stocarea mesajelor (nume utilizator, mesaj, timestamp).
+Packagează aplicația într-un fișier WAR.
+Creează o imagine Docker cu Tomcat și aplicația WAR.
+Scrie un fișier YAML pentru deployment:
+3 replici.
+Expune portul 88 printr-un service.
+
+
+
+Frontend (Client Angular)
+
+Creează o aplicație Angular simplă:
+Un formular pentru trimiterea mesajelor.
+O zonă pentru afișarea istoricului mesajelor.
+Conexiune WebSocket la ws://<cluster-ip>:88.
+
+
+Build-uiește aplicația și creează o imagine Docker cu Nginx pentru a servi fișierele statice.
+Scrie un fișier YAML pentru deployment:
+1 replică.
+Expune portul 90 printr-un service.
+
+
+
+Integrare
+
+Adaugă o pagină în Drupal cu un iframe care încarcă clientul de chat (<iframe src="http://<cluster-ip>:90"></iframe>).
+Testează trimiterea și afișarea mesajelor.
+
+
+
+
+Pasul 4: Implementarea aplicației de IA
+
+Obiectiv: Creează o aplicație care procesează fișiere folosind un serviciu Azure, integrată în Drupal.
+Acțiuni:
+Creează o aplicație Angular:
+Formular pentru încărcarea fișierelor.
+Afișează istoricul cererilor (nume fișier, rezultat procesare).
+
+
+Integrează Azure:
+Configurează Azure Blob Storage pentru stocarea fișierelor.
+Configurează Azure SQL Database pentru stocarea metadatelor (nume, adresă blob, timestamp, rezultat).
+Folosește serviciul Azure "entity extraction" pentru procesarea fișierelor.
+
+
+Build-uiește aplicația și creează o imagine Docker cu Nginx.
+Scrie un fișier YAML pentru deployment:
+1 replică.
+Expune un port (ex. 91) printr-un service.
+
+
+Adaugă o pagină în Drupal cu un iframe (<iframe src="http://<cluster-ip>:91"></iframe>).
+Testează încărcarea unui fișier și afișarea rezultatelor procesării.
+
+
+
+
+Pasul 5: Configurarea bazelor de date și a stocării
+
+Obiectiv: Asigură stocarea datelor pentru toate componentele.
+Acțiuni:
+Drupal: Configurează o bază de date MySQL/PostgreSQL în Kubernetes sau managed.
+Chat: Configurează o bază de date separată pentru mesaje.
+IA: Creează o instanță Azure SQL Database și configurează conexiunea din aplicația Angular.
+Stocare: Configurează Azure Blob Storage și integrează-l în aplicația de IA.
+
+
+
+
+Pasul 6: Scrierea manifestelor Kubernetes
+
+Obiectiv: Definește resursele Kubernetes pentru toate componentele.
+Acțiuni:
+Creează fișiere YAML pentru:
+Deployment și Service pentru Drupal (2 replici, port 80).
+Deployment și Service pentru serverul de chat (3 replici, port 88).
+Deployment și Service pentru clientul de chat (1 replică, port 90).
+Deployment și Service pentru aplicația de IA (1 replică, port 91).
+Deployment-uri pentru bazele de date (dacă nu sunt managed).
+
+
+Folosește ConfigMaps/Secrets pentru configurări (ex. conexiuni la baze de date, chei Azure).
+Configurează Persistent Volumes dacă este necesar.
+
+
+
+
+Pasul 7: Testarea și depanarea
+
+Obiectiv: Verifică funcționalitatea completă a sistemului.
+Acțiuni:
+Aplică manifestele YAML pe cluster (kubectl apply -f <fișier>.yaml).
+Verifică accesibilitatea site-ului Drupal și iframe-urile.
+Testează chatul: trimite mesaje și verifică afișarea istoricului.
+Testează aplicația de IA: încarcă un fișier și verifică procesarea entităților.
+Depanează erorile (ex. verifică log-urile cu kubectl logs).
+
+
+
+
+Pasul 8: Pregătirea pentru prezentare
+
+Obiectiv: Asigură o demonstrație rapidă și funcțională.
+Acțiuni:
+Curăță clusterul înainte de prezentare (kubectl delete all --all).
+Pregătește un script sau o listă de comenzi pentru aplicarea rapidă a manifestelor.
+Demonstrează:
+Aplicarea YAML-urilor.
+Accesarea site-ului Drupal.
+Funcționalitatea chatului și a aplicației de IA.
+
+
+Fii pregătit pentru comenzi Kubernetes (ex. kubectl get pods, kubectl describe).
+
+
+
+
+Tehnologii de învățat
+
+Kubernetes: Deployment, Services, ConfigMaps, Secrets, Persistent Volumes.
+Drupal: Instalare, configurare, creare site simplu.
+Java+Tomcat: Implementare WebSocket.
+Angular: Creare aplicații frontend.
+Azure: Blob Storage, SQL Database, Entity Extraction.
+WebSocket: Protocol și implementare.
+Iframe: Integrare în Drupal.
+
+
+Sfaturi finale
+
+Alocă timp pentru învățarea tehnologiilor noi (ex. Azure, WebSocket).
+Testează frecvent fiecare componentă separat înainte de integrare.
+Păstrează configurările securizate folosind Secrets în Kubernetes.
+
+Acest plan te va ghida pas cu pas pentru a implementa proiectul cu succes și a înțelege ce realizezi la fiecare etapă. Succes!
