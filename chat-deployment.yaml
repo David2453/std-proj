@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-server
+spec:
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: chat-server
+  template:
+    metadata:
+      labels:
+        app: chat-server
+    spec:
+      containers:
+      - name: chat-server
+        image: chat-server
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mariadb://mariadb:3306/drupal
+        - name: SPRING_DATASOURCE_USERNAME
+          value: drupal
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: drupalpass
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-service
+spec:
+  type: NodePort
+  selector:
+    app: chat-server
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30088  

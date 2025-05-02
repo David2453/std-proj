@@ -1,40 +1,29 @@
-package web.example.websocket_proj.model;
+package web.example.websocket_proj.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-public class Message {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class ChatMessageDTO {
     private String content;
     private String username;
-    
-    @Column(name = "timestamp")
     private LocalDateTime timestamp;
 
-    public Message() {
-        this.timestamp = LocalDateTime.now();
+    // Constructor gol necesar pentru deserializare
+    public ChatMessageDTO() {
     }
 
-    public Message(String content, String username) {
+    public ChatMessageDTO(String content, String username) {
         this.content = content;
         this.username = username;
         this.timestamp = LocalDateTime.now();
     }
 
+    public ChatMessageDTO(String content, String username, LocalDateTime timestamp) {
+        this.content = content;
+        this.username = username;
+        this.timestamp = timestamp;
+    }
+
     // Getters și setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getContent() {
         return content;
     }
@@ -42,19 +31,19 @@ public class Message {
     public void setContent(String content) {
         this.content = content;
     }
-    
+
     public String getUsername() {
         return username;
     }
-    
+
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
-    
+
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }

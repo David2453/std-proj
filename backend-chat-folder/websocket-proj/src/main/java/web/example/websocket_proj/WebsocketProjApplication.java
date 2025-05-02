@@ -2,9 +2,16 @@ package web.example.websocket_proj;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-public class WebsocketProjApplication {
+public class WebsocketProjApplication extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(WebsocketProjApplication.class);
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(WebsocketProjApplication.class, args);

@@ -1,30 +1,169 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>WebSocket Chat Test</title>
+  <title>WebSocket Chat Test - Îmbunătățit</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .chat-container {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      background-color: #e1f5fe;
+    }
+    .message .username {
+      font-weight: bold;
+      color: #0277bd;
+    }
+    .message .timestamp {
+      font-size: 0.8em;
+      color: #666;
+      margin-left: 10px;
+    }
+    .message .content {
+      margin-top: 5px;
+    }
+    .input-container {
+      display: flex;
+      gap: 10px;
+    }
+    input, button {
+      padding: 8px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+    }
+    input {
+      flex-grow: 1;
+    }
+    button {
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0d8bf2;
+    }
+    .username-container {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
   <h2>WebSocket Chat Client</h2>
-  <input id="msg" type="text" placeholder="Scrie un mesaj..." />
-  <button onclick="sendMessage()">Trimite</button>
-  <pre id="chat"></pre>
+  
+  <div class="username-container">
+    <label for="username">Nume utilizator:</label>
+    <input id="username" type="text" value="Anonymous" />
+  </div>
+  
+  <div class="chat-container" id="chat-container"></div>
+  
+  <div class="input-container">
+    <input id="msg" type="text" placeholder="Scrie un mesaj..." />
+    <button onclick="sendMessage()">Trimite</button>
+  </div>
 
   <script>
-    const socket = new WebSocket("ws://localhost:8080/chat");
-
+    // Format date
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleString();
+    }
+    
+    // Adaugă mesaj în container
+    function addMessage(message) {
+      const chatContainer = document.getElementById("chat-container");
+      
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message";
+      
+      const headerDiv = document.createElement("div");
+      
+      const usernameSpan = document.createElement("span");
+      usernameSpan.className = "username";
+      usernameSpan.textContent = message.username;
+      
+      const timestampSpan = document.createElement("span");
+      timestampSpan.className = "timestamp";
+      timestampSpan.textContent = formatDate(message.timestamp);
+      
+      headerDiv.appendChild(usernameSpan);
+      headerDiv.appendChild(timestampSpan);
+      
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "content";
+      contentDiv.textContent = message.content;
+      
+      messageDiv.appendChild(headerDiv);
+      messageDiv.appendChild(contentDiv);
+      
+      chatContainer.appendChild(messageDiv);
+      
+      // Scroll la ultimul mesaj
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    
+    // Conectare WebSocket
+    const socket = new WebSocket("ws://localhost:30088/chat");    
     socket.onopen = () => {
-      document.getElementById("chat").textContent += "✅ Conectat la WebSocket\n";
+      console.log("Conectat la WebSocket");
     };
-
+    
     socket.onmessage = (event) => {
-      document.getElementById("chat").textContent += "📩 " + event.data + "\n";
+      try {
+        const message = JSON.parse(event.data);
+        addMessage(message);
+      } catch (e) {
+        console.error("Eroare la parsarea mesajului:", e);
+        console.log("Mesaj primit:", event.data);
+      }
     };
-
+    
+    socket.onerror = (error) => {
+      console.error("Eroare WebSocket:", error);
+    };
+    
+    socket.onclose = (event) => {
+      console.log("Conexiune închisă. Cod:", event.code, "Motiv:", event.reason);
+    };
+    
+    // Trimite mesaj
     function sendMessage() {
-      const msg = document.getElementById("msg").value;
-      socket.send(msg);
+      const content = document.getElementById("msg").value.trim();
+      const username = document.getElementById("username").value.trim() || "Anonymous";
+      
+      if (content === "") return;
+      
+      const message = {
+        content: content,
+        username: username,
+        timestamp: new Date().toISOString()
+      };
+      
+      socket.send(JSON.stringify(message));
       document.getElementById("msg").value = "";
     }
+    
+    // Enter pentru trimitere
+    document.getElementById("msg").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
   </script>
 </body>
 </html>

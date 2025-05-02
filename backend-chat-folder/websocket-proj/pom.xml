@@ -11,6 +11,7 @@
 	<groupId>web.example</groupId>
 	<artifactId>websocket-proj</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging> <!-- Adăugăm packaging WAR -->
 	<name>websocket-proj</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -42,6 +43,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+        
+        <!-- Suport pentru implementare WAR -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -55,6 +63,14 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -62,6 +78,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>chatapp</finalName> <!-- Numele final al fișierului WAR -->
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
