@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat iframe Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .page-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .chat-container {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .chat-iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-content">
+        <h1>Test Page with Chat Widget</h1>
+        <p>This is a test page to verify that the chat widget works properly in an iframe before integrating with Drupal.</p>
+        
+        <div class="chat-container">
+            <h2>Live Chat</h2>
+            <iframe 
+                class="chat-iframe"
+                src="http://localhost:4200" 
+                title="Live Chat">
+            </iframe>
+        </div>
+        
+        <p>The chat widget above should be fully functional. Try sending some messages to verify it works inside the iframe.</p>
+    </div>
+</body>
+</html>
