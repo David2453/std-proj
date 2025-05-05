@@ -6,13 +6,12 @@ import { AppComponent } from './app.component';
 import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ChatComponent
-  ],
+  declarations: [], // Remove components from declarations since they're standalone
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    AppComponent, // Import the standalone components instead
+    ChatComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

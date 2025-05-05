@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -22,10 +23,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   websocket: WebSocket | null = null;
   connectionStatus: string = 'Disconnected';
 
-  constructor() { }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
   ngOnInit(): void {
-    this.connectWebSocket();
+    if (isPlatformBrowser(this.platformId)) {
+      this.connectWebSocket();
+    }
   }
 
   ngOnDestroy(): void {
@@ -46,12 +49,14 @@ export class ChatComponent implements OnInit, OnDestroy {
         const message = JSON.parse(event.data);
         this.messages.push(message);
         // Auto-scroll to bottom
-        setTimeout(() => {
-          const chatContainer = document.querySelector('.chat-messages');
-          if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-          }
-        }, 0);
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => {
+            const chatContainer = document.querySelector('.chat-messages');
+            if (chatContainer) {
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+          }, 0);
+        }
       } catch (error) {
         console.error('Error parsing message:', error);
       }
@@ -61,7 +66,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.connectionStatus = 'Disconnected';
       console.log('WebSocket connection closed');
       // Try to reconnect after 3 seconds
-      setTimeout(() => this.connectWebSocket(), 3000);
+      setTimeout(() => {
+        if (isPlatformBrowser(this.platformId)) {
+          this.connectWebSocket();
+        }
+      }, 3000);
     };
 
     this.websocket.onerror = (error) => {
