@@ -22,6 +22,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   username: string = 'Anonymous';
   websocket: WebSocket | null = null;
   connectionStatus: string = 'Disconnected';
+  isMinimized: boolean = true; // Start minimized
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
@@ -33,6 +34,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.disconnectWebSocket();
+  }
+
+  toggleWidget(): void {
+    this.isMinimized = !this.isMinimized;
   }
 
   connectWebSocket(): void {
